@@ -1,0 +1,1 @@
+Grab the Yelp dataset from the data directory on the shared student repository and move them here.
