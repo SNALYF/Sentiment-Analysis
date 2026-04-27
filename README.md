@@ -1,13 +1,12 @@
-# Sentiment Analysis Pipeline
+# Sentiment Analysis
 
-This project converts a research notebook into a modular machine learning pipeline for sentiment analysis on Yelp reviews. It includes data loading, exploratory data analysis (EDA), preprocessing, and training of multiple models (Baseline, CBOW, BiLSTM).
+A modular machine learning pipeline for classifying Yelp restaurant reviews by star rating (1–5). The pipeline covers data loading, exploratory analysis, text preprocessing, and training of three progressively complex models.
 
 ## Project Structure
 
 ```
 .
 ├── main.py
-├── requirements.txt
 ├── src/
 │   ├── data_loader.py
 │   ├── eda.py
@@ -15,43 +14,80 @@ This project converts a research notebook into a modular machine learning pipeli
 │   ├── models.py
 │   ├── train.py
 │   └── utils.py
-├── img/
-│   ├── rating_distribution.png
-│   └── review_length_distribution.png
+├── docs/
+│   ├── main.md
+│   ├── data_loader.md
+│   ├── eda.md
+│   ├── preprocessing.md
+│   ├── models.md
+│   ├── train.md
+│   └── utils.md
+├── data/
+│   └── yelp_review/
+│       ├── train.tsv
+│       ├── val.tsv
+│       └── test.tsv
 ├── model/
 │   ├── best_cbow.pth
 │   └── best_bilstm.pth
-└── data/
-    └── yelp_review/
-        ├── train.tsv
-        ├── val.tsv
-        └── test.tsv
+└── img/
+    ├── rating_distribution.png
+    └── review_length_distribution.png
 ```
 
-## Pipeline Overview
+## Models
 
-The pipeline is orchestrated by `main.py` and consists of the following sequential steps:
+| Model | Type | Library |
+|---|---|---|
+| Baseline | TF-IDF + Logistic Regression | scikit-learn |
+| CBOW | Averaged word embeddings + FC layers | PyTorch |
+| BiLSTM | Bidirectional LSTM | PyTorch |
 
-1.  **Setup**: Initializes random seeds for reproducibility and selects the computing device (CPU or GPU).
-2.  **Data Loading**: Downloads the Yelp review dataset from Google Drive (if not present) and loads the training, validation, and test sets into Pandas DataFrames.
-3.  **EDA (Exploratory Data Analysis)**: Analyzes the training data and generates two plots in the `img/` directory:
-    - `rating_distribution.png`: Shows the balance of star ratings.
-    - `review_length_distribution.png`: Shows the distribution of review lengths.
-4.  **Preprocessing**:
-    - Encodes target labels (star ratings) into integers.
-    - Builds a vocabulary from the training text.
-    - Creates an embedding matrix using pre-trained Spacy vectors (`en_core_web_sm`).
-    - Converts text data into PyTorch DataLoaders with padding.
-5.  **Baseline Model**: Trains a TF-IDF Vectorizer + Logistic Regression model using scikit-learn to establish a baseline performance metric.
-6.  **CBOW Model (Continuous Bag of Words)**: Trains a neural network that averages word embeddings and passes them through fully connected layers. The best model based on validation loss is saved to `model/best_cbow.pth`.
-7.  **BiLSTM Model (Bidirectional LSTM)**: Trains a Bidirectional LSTM network to capture sequential dependencies in the text. It uses the same pre-trained embeddings and supports early stopping. The best model is saved to `model/best_bilstm.pth`.
+All neural models use pretrained 300-dimensional word vectors from spaCy (`en_core_web_sm`).
 
 ## Usage
-
-Run the entire pipeline using:
 
 ```bash
 python3 main.py
 ```
 
-Ensure all dependencies listed in `requirements.txt` are installed before running.
+The pipeline runs all stages automatically:
+1. Downloads the dataset if not present
+2. Runs EDA and saves plots to `img/`
+3. Preprocesses text and builds DataLoaders
+4. Trains Baseline → CBOW → BiLSTM in sequence
+5. Saves best neural model checkpoints to `model/`
+
+## Results
+
+Best model: **BiLSTM** — saved at epoch 5 (early stopping triggered at epoch 7, patience=3).
+
+| Model | Val Macro F1 |
+|---|---|
+| BiLSTM (best checkpoint) | **0.5310** |
+
+Training log:
+
+| Epoch | Train Loss | Val Loss | Val F1 |
+|---|---|---|---|
+| 1 | 1.4031 | 1.2327 | 0.4521 |
+| 2 | 1.2334 | 1.2392 | 0.4346 |
+| 3 | 1.1421 | 1.1874 | 0.4686 |
+| 4 | 1.0361 | 1.0636 | 0.5289 |
+| **5** | **0.9297** | **1.0446** | **0.5310** ← saved |
+| 6 | 0.8368 | 1.0540 | 0.5501 |
+| 7 | 0.7459 | 1.0646 | 0.5570 |
+
+Checkpoint is saved based on lowest validation loss. Early stopping halted training after 3 consecutive epochs without improvement.
+
+## Documentation
+
+Per-module documentation is in [`docs/`](docs/). Each file covers function signatures, parameters, return values, and architecture details.
+
+## Requirements
+
+Install dependencies before running:
+
+```bash
+pip install -r requirements.txt
+```
