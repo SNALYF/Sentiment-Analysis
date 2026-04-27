@@ -60,11 +60,13 @@ The pipeline runs all stages automatically:
 
 ## Results
 
-Best model: **BiLSTM** — saved at epoch 5 (early stopping triggered at epoch 7, patience=3).
+Dataset: **27,500 Yelp reviews** (train / val / test split), 5-class star rating classification.
+
+Best model: **BiLSTM** — saved at epoch 7 (best Macro F1), early stopping triggered at epoch 7 (patience=3).
 
 | Model | Val Macro F1 |
 |---|---|
-| BiLSTM (best checkpoint) | **0.5310** |
+| BiLSTM (best checkpoint) | **0.5570** |
 
 Training log:
 
@@ -74,11 +76,11 @@ Training log:
 | 2 | 1.2334 | 1.2392 | 0.4346 |
 | 3 | 1.1421 | 1.1874 | 0.4686 |
 | 4 | 1.0361 | 1.0636 | 0.5289 |
-| **5** | **0.9297** | **1.0446** | **0.5310** ← saved |
+| 5 | 0.9297 | 1.0446 | 0.5310 |
 | 6 | 0.8368 | 1.0540 | 0.5501 |
-| 7 | 0.7459 | 1.0646 | 0.5570 |
+| **7** | **0.7459** | **1.0646** | **0.5570** ← saved |
 
-Checkpoint is saved based on lowest validation loss. Early stopping halted training after 3 consecutive epochs without improvement.
+Checkpoint is saved based on highest validation Macro F1. Early stopping halted training after 3 consecutive epochs without improvement.
 
 ## Documentation
 

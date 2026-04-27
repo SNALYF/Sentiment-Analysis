@@ -30,7 +30,7 @@ Epoch [n/N], Train Loss: X.XXXX, Val Loss: X.XXXX, Val F1 (Macro): X.XXXX
 ```
 
 **Early stopping logic**
-- Resets a counter when validation loss improves; increments otherwise.
+- Resets a counter when validation Macro F1 improves; increments otherwise.
 - Stops training when the counter reaches `patience`.
 - Always loads the best checkpoint before returning.
 
